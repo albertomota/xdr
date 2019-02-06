@@ -76,7 +76,8 @@ defmodule XDR.Type.Union do
     switch_module = get_switch(spec)
     arm_module = get_arm_module(discriminant, spec)
 
-    valid_xdr_type?(arm_module) and switch_module.valid?(discriminant) and arm_module.valid?(val)
+    # valid_xdr_type?(arm_module) and switch_module.valid?(discriminant) and arm_module.valid?(val)
+    switch_module.valid?(discriminant) and arm_module.valid?(val)
   end
 
   def valid?(discriminant, spec) do
@@ -211,9 +212,10 @@ defmodule XDR.Type.Union do
   defp get_attribute(discriminant, spec) do
     attr = get_case(discriminant, spec)
 
-    spec
-    |> get_attributes()
-    |> Keyword.get(attr)
+    case spec |> get_attributes() |> Keyword.get(attr) do
+      nil -> attr
+      classname -> classname
+    end
   end
 
   # Retrieves a module for a given discriminant (attribute, case or default), or nil
